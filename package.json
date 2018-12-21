@@ -13,7 +13,7 @@
     "url": "git+https://github.com/radiovisual/metalsmith-boilerplate.git"
   },
   "engines": {
-    "node": ">=4"
+    "node": ">=6"
   },
   "keywords": [
     "metalsmith",
