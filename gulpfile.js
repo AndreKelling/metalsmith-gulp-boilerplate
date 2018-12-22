@@ -17,11 +17,8 @@ var metalsmith = require("./metalsmith.js");
 
 // Assets and paths from ./site.json
 var site = require("./site.json");
-var assetPaths = site.assets.paths;
-var globs = site.assets.globs;
 var destinationDir = site.destination;
 var sourceDir = site.source;
-var minified = site.minified;
 
 /**
  * Set the watch process and the browserSync defaults
@@ -34,6 +31,7 @@ gulp.task('watch', function() {
         }
     });
     gulp.watch('./layouts/**/**/*.hbs', gulp.series('metalsmith', 'browser-sync'));
+    gulp.watch('./src/**/**/*.html', gulp.series('metalsmith', 'browser-sync'));
     gulp.watch(sourceDir+'/js/vendor/*.js', gulp.series('build-deps', 'metalsmith', 'browser-sync'));
     gulp.watch(sourceDir+'/js/*.js', gulp.series('browserify', 'metalsmith', 'browser-sync'));
     gulp.watch(sourceDir+'/css/*.scss', gulp.series('css', 'metalsmith', 'browser-sync'));
@@ -49,22 +47,22 @@ gulp.task('browser-sync', function(done) {
  *
  */
 gulp.task('css', function() {
-    return gulp.src(globs.sass)
+    return gulp.src("./src/css/*.scss")
         .pipe(sass().on('error', sass.logError))
         .pipe(minifycss())
-        .pipe(concat(minified.css))
-        .pipe(gulp.dest(assetPaths.css));
+        .pipe(concat("styles.min.css"))
+        .pipe(gulp.dest("./src/css"));
 });
 
 
 /**
  * Flatten all javascript dependencies.
- *
+ * @todo: remove dep JS and do all with browserfy bundle
  */
 gulp.task('build-deps', function() {
-    return gulp.src(globs.vendor)
-        .pipe(concat(minified.jsdependencies))
-        .pipe(gulp.dest(assetPaths.jsbin));
+    return gulp.src("./src/js/vendor/*.js")
+        .pipe(concat("dependencies.min.js"))
+        .pipe(gulp.dest("./src/js/bin/"));
 });
 
 
@@ -89,7 +87,7 @@ gulp.task('browserify', function (done) {
         .pipe(uglify())
         .pipe(sourcemaps.init({loadMaps: true}))
         .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest(assetPaths.jsbin));
+        .pipe(gulp.dest("./src/js/bin/"));
         done();
 });
 
@@ -98,8 +96,9 @@ gulp.task('browserify', function (done) {
  *
  */
 gulp.task('metalsmith', function(done){
-    metalsmith.build(function(err){
+    metalsmith.build(function(err, files){
         if (err) throw err;
+        //console.log(files);
         done();
     });
 });

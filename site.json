@@ -4,31 +4,15 @@
   "metadata": {
     "site": {
       "name": "Your Site Title Here",
-      "description": "A simple static website boilerplate with Metalsmith & Gulp",
+      "description": "A starter template for Onepager websites with Metalsmith + Gulp",
       "url": "https://github.com/radiovisual/metalsmith-boilerplate",
-      "author": "radiovisual",
-      "email": "user@example.com",
+      "author": "André Kelling",
+      "email": "contact@andrekelling.de",
       "keywords": [
         "Your",
         "Keywords",
         "Here"
       ]
     }
-  },
-  "assets": {
-    "globs" : {
-      "vendor": ["./src/js/vendor/*.js"],
-      "sass": ["./src/css/*.scss"],
-      "scripts": ["./src/js/*.js"],
-      "html": ["./src/*.html"]
-    },
-    "paths":{
-      "css": "./src/css",
-      "jsbin": "./src/js/bin/"
-    }
-  },
-  "minified": {
-    "css": "styles.min.css",
-    "jsdependencies": "dependencies.min.js"
   }
 }
