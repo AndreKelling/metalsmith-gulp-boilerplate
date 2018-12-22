@@ -32,7 +32,6 @@ gulp.task('watch', function() {
     });
     gulp.watch('./layouts/**/**/*.hbs', gulp.series('metalsmith', 'browser-sync'));
     gulp.watch('./src/**/**/*.html', gulp.series('metalsmith', 'browser-sync'));
-    gulp.watch(sourceDir+'/js/vendor/*.js', gulp.series('build-deps', 'metalsmith', 'browser-sync'));
     gulp.watch(sourceDir+'/js/*.js', gulp.series('browserify', 'metalsmith', 'browser-sync'));
     gulp.watch(sourceDir+'/css/*.scss', gulp.series('css', 'metalsmith', 'browser-sync'));
 });
@@ -66,6 +65,7 @@ gulp.task('browserify', function (done) {
         entries: sourceDir+'/js/app.js',
         debug: true
     })
+        .transform("babelify", {presets: ["@babel/preset-env"]})
         .bundle()
         .on('error', err => {
             log.error("Browserify Error" + err.message)
@@ -95,7 +95,7 @@ gulp.task('metalsmith', function(done){
  * The build task.
  *
  * */
-gulp.task('build', gulp.series('css', 'build-deps', 'browserify', 'metalsmith'));
+gulp.task('build', gulp.series('css', 'browserify', 'metalsmith'));
 
 /**
  * The dev task.
