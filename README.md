@@ -45,6 +45,13 @@ start the dev task build/watch process with this command:
 
 ## Usage Notes
 
+
+#### Dependencie
+
+    "metalsmith-collections": "spacedawwwg/metalsmith-collections"
+
+fix for duplicate output when running multiple times metalsmith build while dev
+
 #### General
 
 This boilerplate represents an opinionated setup for building static websites with Metalsmith and Gulp. It assumes

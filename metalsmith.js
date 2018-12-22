@@ -3,7 +3,12 @@ var Metalsmith = require('metalsmith');
 var layouts = require('metalsmith-layouts');
 var discoverPartials = require('metalsmith-discover-partials');
 var rootPath = require('metalsmith-rootpath');
+var ignore  = require('metalsmith-ignore');
+var permalinks  = require('metalsmith-permalinks');
+var markdown = require('metalsmith-markdown');
+var collections = require('metalsmith-collections');
 var handlebars = require('handlebars');
+var debug = require('metalsmith-debug');
 var glob = require('glob');
 
 /**
@@ -46,6 +51,19 @@ module.exports = Metalsmith(__dirname)
     // Expose `rootPath` to each file
     .use(rootPath())
 
+    .use(collections({
+        onepager: {
+            pattern: 'onepager/**/*.html',
+            sortBy: 'order'
+        }
+    }))
+
+    // .use(markdown())
+
+    .use(permalinks({
+        relative: 'on'
+    }))
+
     // Process handlebars partials
     .use(discoverPartials({
         directory: './layouts/partials',
@@ -56,4 +74,9 @@ module.exports = Metalsmith(__dirname)
         engine: 'handlebars',
     }))
 
+    // Ignore Onepager Partials
+    .use(ignore([
+        'onepager/**'
+    ]))
 
+    //.use(debug())
