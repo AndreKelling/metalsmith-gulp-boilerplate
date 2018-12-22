@@ -54,18 +54,6 @@ gulp.task('css', function() {
         .pipe(gulp.dest("./src/css"));
 });
 
-
-/**
- * Flatten all javascript dependencies.
- * @todo: remove dep JS and do all with browserfy bundle
- */
-gulp.task('build-deps', function() {
-    return gulp.src("./src/js/vendor/*.js")
-        .pipe(concat("dependencies.min.js"))
-        .pipe(gulp.dest("./src/js/bin/"));
-});
-
-
 /**
  * Bundle all the files you need in browserify.
  *
