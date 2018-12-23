@@ -9,6 +9,7 @@ var sass = require('gulp-sass');
 var browserify = require('browserify');
 var uglify = require('gulp-uglify');
 var stylelint = require('gulp-stylelint');
+var eslint = require('gulp-eslint');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var log = require('fancy-log');
@@ -27,20 +28,20 @@ var sourceDir = site.source;
  *
  */
 gulp.task('watch', function() {
-    browserSync.init({
-        server: {
-            baseDir: destinationDir
-        }
-    });
-    gulp.watch('./layouts/**/**/*.hbs', gulp.series('metalsmith', 'browser-sync'));
-    gulp.watch('./src/**/**/*.html', gulp.series('metalsmith', 'browser-sync'));
-    gulp.watch(sourceDir+'/js/*.js', gulp.series('browserify', 'metalsmith', 'browser-sync'));
-    gulp.watch(sourceDir+'/css/*.scss', gulp.series('css', 'metalsmith', 'browser-sync'));
+  browserSync.init({
+    server: {
+      baseDir: destinationDir
+    }
+  });
+  gulp.watch('./layouts/**/**/*.hbs', gulp.series('metalsmith', 'browser-sync'));
+  gulp.watch('./src/**/**/*.html', gulp.series('metalsmith', 'browser-sync'));
+  gulp.watch([sourceDir+'/js/app.js', sourceDir+'/js/vendor/**/*.js'], gulp.series('eslint', 'browserify', 'metalsmith', 'browser-sync'));
+  gulp.watch(sourceDir+'/css/*.scss', gulp.series('css', 'metalsmith', 'browser-sync'));
 });
 
 gulp.task('browser-sync', function(done) {
-    browserSync.reload();
-    done();
+  browserSync.reload();
+  done();
 });
 
 /**
@@ -48,17 +49,17 @@ gulp.task('browser-sync', function(done) {
  *
  */
 gulp.task('css', function() {
-    return gulp.src("./src/css/*.scss")
-        .pipe(stylelint({
-            failAfterError: false,
-            reporters: [
-                {formatter: 'string', console: true}
-            ]
-        }))
-        .pipe(sass().on('error', sass.logError))
-        .pipe(minifycss())
-        .pipe(concat("styles.min.css"))
-        .pipe(gulp.dest("./src/css"));
+  return gulp.src("./src/css/*.scss")
+    .pipe(stylelint({
+      failAfterError: false,
+      reporters: [
+        {formatter: 'string', console: true}
+      ]
+    }))
+    .pipe(sass().on('error', sass.logError))
+    .pipe(minifycss())
+    .pipe(concat("styles.min.css"))
+    .pipe(gulp.dest("./src/css"));
 });
 
 /**
@@ -67,24 +68,35 @@ gulp.task('css', function() {
  * @note: This will browserify all you have listed in app.js
  * See: https://blog.revathskumar.com/2016/02/browserify-with-gulp.html
  */
+
+gulp.task('eslint', function (done) {
+  return gulp.src([
+    sourceDir+'/js/app.js',
+    sourceDir+'/js/vendor/**/*.js'
+  ])
+    .pipe(eslint())
+    .pipe(eslint.format());
+    done();
+});
+
 gulp.task('browserify', function (done) {
 
-    browserify({
-        entries: sourceDir+'/js/app.js',
-        debug: true
+  browserify({
+    entries: sourceDir+'/js/app.js',
+    debug: true
+  })
+    .transform("babelify", {presets: ["@babel/preset-env"]})
+    .bundle()
+    .on('error', err => {
+      log.error("Browserify Error" + err.message)
     })
-        .transform("babelify", {presets: ["@babel/preset-env"]})
-        .bundle()
-        .on('error', err => {
-            log.error("Browserify Error" + err.message)
-        })
-        .pipe(source('app.bundle.js'))
-        .pipe(buffer())
-        .pipe(uglify())
-        .pipe(sourcemaps.init({loadMaps: true}))
-        .pipe(sourcemaps.write('.'))
-        .pipe(gulp.dest("./src/js/bin/"));
-        done();
+    .pipe(source('app.bundle.js'))
+    .pipe(buffer())
+    .pipe(uglify())
+    .pipe(sourcemaps.init({loadMaps: true}))
+    .pipe(sourcemaps.write('.'))
+    .pipe(gulp.dest("./src/js/bin/"));
+  done();
 });
 
 /**
@@ -92,18 +104,18 @@ gulp.task('browserify', function (done) {
  *
  */
 gulp.task('metalsmith', function(done){
-    metalsmith.build(function(err, files){
-        if (err) throw err;
-        //console.log(files);
-        done();
-    });
+  metalsmith.build(function(err, files){
+    if (err) throw err;
+    //console.log(files);
+    done();
+  });
 });
 
 /**
  * The build task.
  *
  * */
-gulp.task('build', gulp.series('css', 'browserify', 'metalsmith'));
+gulp.task('build', gulp.series('css', 'eslint', 'browserify', 'metalsmith'));
 
 /**
  * The dev task.
