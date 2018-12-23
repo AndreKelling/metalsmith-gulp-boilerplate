@@ -13,6 +13,7 @@ var eslint = require('gulp-eslint');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var log = require('fancy-log');
+var del = require('del');
 var sourcemaps = require('gulp-sourcemaps');
 
 // Import our configured Metalsmith instance
@@ -35,8 +36,8 @@ gulp.task('watch', function() {
   });
   gulp.watch('./layouts/**/**/*.hbs', gulp.series('metalsmith', 'browser-sync'));
   gulp.watch('./src/**/**/*.html', gulp.series('metalsmith', 'browser-sync'));
-  gulp.watch([sourceDir+'/js/app.js', sourceDir+'/js/vendor/**/*.js'], gulp.series('eslint', 'browserify', 'metalsmith', 'browser-sync'));
-  gulp.watch(sourceDir+'/css/*.scss', gulp.series('css', 'metalsmith', 'browser-sync'));
+  gulp.watch(['./js/app.js', './js/vendor/**/*.js'], gulp.series('eslint', 'browserify', 'metalsmith', 'browser-sync'));
+  gulp.watch('./scss/*.scss', gulp.series('css', 'metalsmith', 'browser-sync'));
 });
 
 gulp.task('browser-sync', function(done) {
@@ -49,7 +50,7 @@ gulp.task('browser-sync', function(done) {
  *
  */
 gulp.task('css', function() {
-  return gulp.src("./src/css/*.scss")
+  return gulp.src("./scss/*.scss")
     .pipe(stylelint({
       failAfterError: false,
       reporters: [
@@ -59,7 +60,7 @@ gulp.task('css', function() {
     .pipe(sass().on('error', sass.logError))
     .pipe(minifycss())
     .pipe(concat("styles.min.css"))
-    .pipe(gulp.dest("./src/css"));
+    .pipe(gulp.dest("./build"));
 });
 
 /**
@@ -71,8 +72,8 @@ gulp.task('css', function() {
 
 gulp.task('eslint', function (done) {
   return gulp.src([
-    sourceDir+'/js/app.js',
-    sourceDir+'/js/vendor/**/*.js'
+    './js/app.js',
+    './js/vendor/**/*.js'
   ])
     .pipe(eslint())
     .pipe(eslint.format());
@@ -82,7 +83,7 @@ gulp.task('eslint', function (done) {
 gulp.task('browserify', function (done) {
 
   browserify({
-    entries: sourceDir+'/js/app.js',
+    entries: './js/app.js',
     debug: true
   })
     .transform("babelify", {presets: ["@babel/preset-env"]})
@@ -95,7 +96,7 @@ gulp.task('browserify', function (done) {
     .pipe(uglify())
     .pipe(sourcemaps.init({loadMaps: true}))
     .pipe(sourcemaps.write('.'))
-    .pipe(gulp.dest("./src/js/bin/"));
+    .pipe(gulp.dest("./build"));
   done();
 });
 
@@ -104,6 +105,9 @@ gulp.task('browserify', function (done) {
  *
  */
 gulp.task('metalsmith', function(done){
+  // delete build files for cleanup
+  del(['build/index.html','build/*/**','!build','!build/images','!build/images/**','!build/fonts','!build/fonts/**']);
+
   metalsmith.build(function(err, files){
     if (err) throw err;
     //console.log(files);

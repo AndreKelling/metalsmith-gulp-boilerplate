@@ -41,7 +41,8 @@ glob.sync('layouts/helpers/*.js').forEach((fileName) => {
  */
 module.exports = Metalsmith(__dirname)
 
-    .source(metadata.source)
+    .clean(false)
+
     // Where shall we build?
     .destination(metadata.destination)
 
