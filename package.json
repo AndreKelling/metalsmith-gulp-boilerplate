@@ -50,6 +50,7 @@
     "gulp-sass": "^4.0.2",
     "gulp-sourcemaps": "^2.6.4",
     "gulp-streamify": "^1.0.0",
+    "gulp-stylelint": "^8.0.0",
     "gulp-uglify": "^3.0.1",
     "handlebars": "^4.0.6",
     "jest": "^23.6.0",
@@ -65,6 +66,7 @@
     "metalsmith-permalinks": "^2.0.0",
     "metalsmith-rootpath": "^1.0.4",
     "rimraf": "^2.6.0",
+    "stylelint": "^9.9.0",
     "vinyl-buffer": "^1.0.0",
     "vinyl-source-stream": "^2.0.0"
   }

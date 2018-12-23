@@ -1,4 +1,5 @@
 'use strict';
+// @todo: add dev and prod settings
 
 var gulp = require('gulp');
 var minifycss = require('gulp-clean-css');
@@ -7,6 +8,7 @@ var browserSync = require('browser-sync').create();
 var sass = require('gulp-sass');
 var browserify = require('browserify');
 var uglify = require('gulp-uglify');
+var stylelint = require('gulp-stylelint');
 var source = require('vinyl-source-stream');
 var buffer = require('vinyl-buffer');
 var log = require('fancy-log');
@@ -47,6 +49,12 @@ gulp.task('browser-sync', function(done) {
  */
 gulp.task('css', function() {
     return gulp.src("./src/css/*.scss")
+        .pipe(stylelint({
+            failAfterError: false,
+            reporters: [
+                {formatter: 'string', console: true}
+            ]
+        }))
         .pipe(sass().on('error', sass.logError))
         .pipe(minifycss())
         .pipe(concat("styles.min.css"))
