@@ -15,7 +15,10 @@
 {{> navigation this }}
 
 {{#each collections.onepager}}
-    {{{ this.contents }}}
+    <section id="{{ id }}">
+        <h2>{{ title }} </h2>
+        {{{ contents }}}
+    </section>
 {{/each}}
 
 {{{ contents }}}
