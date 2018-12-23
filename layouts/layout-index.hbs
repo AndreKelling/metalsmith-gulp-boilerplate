@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <title>{{ title }}</title>
 
-    <link rel="stylesheet" href="{{rootPath}}css/styles.min.css">
+    <link rel="stylesheet" href="/styles.min.css">
 </head>
 
 <body>
@@ -14,13 +14,19 @@
 {{! Pass the metalsmith metadata contect to metalsmith-rootpath }}
 {{> navigation this }}
 
+{{#each collections.onepager}}
+    <section id="{{ id }}">
+        <h2>{{ title }} </h2>
+        {{{ contents }}}
+    </section>
+{{/each}}
+
 {{{ contents }}}
 
 {{! Helpers are auto-loaded from the layouts/helpers directory }}
 <p>{{ trim '  This should be trimmed via the trim helper. '}}</p>
 
-<script src="{{rootPath}}js/bin/dependencies.min.js"></script>
-<script src="{{rootPath}}js/bin/app.bundle.js"></script>
+<script src="/app.bundle.js" async></script>
 
 </body>
 </html>
