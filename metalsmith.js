@@ -5,16 +5,10 @@ var discoverPartials = require('metalsmith-discover-partials');
 var rootPath = require('metalsmith-rootpath');
 var ignore  = require('metalsmith-ignore');
 var permalinks  = require('metalsmith-permalinks');
-var markdown = require('metalsmith-markdown');
 var collections = require('metalsmith-collections');
 var handlebars = require('handlebars');
 var debug = require('metalsmith-debug');
 var glob = require('glob');
-
-/**
- * Import metadata
- */
-var metadata = require('./site.json');
 
 /**
  * Add custom helpers to handlebars using the global handlebars instance
@@ -28,7 +22,7 @@ glob.sync('layouts/helpers/*.js').forEach((fileName) => {
     helper,
     require(`./${fileName}`)
   )
-})
+});
 
 /**
  *  Export your Metalsmith build to use in gulp.
@@ -44,10 +38,22 @@ module.exports = Metalsmith(__dirname)
     .clean(false)
 
     // Where shall we build?
-    .destination(metadata.destination)
+    .destination('./build')
 
     // Process metadata
-    .metadata(metadata.metadata)
+    .metadata({
+        "site": {
+            "name": "Your Site Title Here",
+            "description": "A starter template for Onepager websites with Metalsmith + Gulp",
+            "url": "https://github.com/radiovisual/metalsmith-boilerplate",
+            "author": "André Kelling",
+            "email": "contact@andrekelling.de",
+            "keywords": [
+                "Your",
+                "Keywords",
+                "Here"
+            ]
+        }})
 
     // Expose `rootPath` to each file
     .use(rootPath())
@@ -58,8 +64,6 @@ module.exports = Metalsmith(__dirname)
             sortBy: 'order'
         }
     }))
-
-    // .use(markdown())
 
     .use(permalinks({
         relative: 'on'

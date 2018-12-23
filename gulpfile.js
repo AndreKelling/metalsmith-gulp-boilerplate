@@ -19,10 +19,7 @@ var sourcemaps = require('gulp-sourcemaps');
 // Import our configured Metalsmith instance
 var metalsmith = require("./metalsmith.js");
 
-// Assets and paths from ./site.json
-var site = require("./site.json");
-var destinationDir = site.destination;
-var sourceDir = site.source;
+var destinationDir = './build';
 
 /**
  * Set the watch process and the browserSync defaults
